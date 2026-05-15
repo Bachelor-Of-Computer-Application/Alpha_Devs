@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}QuickBite{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+{% include 'components/hero.html' %}
+
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Partner Restaurants</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">30 min</div>
+        <div class="stat-label">Average Delivery Time</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">50K+</div>
+        <div class="stat-label">Happy Customers</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Cities in Nepal</div>
+    </div>
+</div>
+
+<section class="how-section" aria-labelledby="how-heading">
+    <span class="section-tag">How It Works</span>
+    <h2 id="how-heading" class="section-title">Order in <span class="g">3 easy</span> steps</h2>
+    <div class="how-grid">
+        <div class="how-card">
+            <span class="how-num" aria-hidden="true">01</span>
+            <div class="how-icon-wrap ic-sky">📍</div>
+            <h3>Set Your Location</h3>
+            <p>Enter your delivery address and we'll show you the best restaurants available near you right now.</p>
+        </div>
+        <div class="how-card">
+            <span class="how-num" aria-hidden="true">02</span>
+            <div class="how-icon-wrap ic-gold">🛒</div>
+            <h3>Choose Your Meal</h3>
+            <p>Browse menus, pick your favourites, customise your order, and add items to your cart with a single tap.</p>
+        </div>
+        <div class="how-card">
+            <span class="how-num" aria-hidden="true">03</span>
+            <div class="how-icon-wrap ic-red">🚴</div>
+            <h3>Fast Delivery</h3>
+            <p>Our riders pick up your order and deliver it hot to your door — tracked in real time, every time.</p>
+        </div>
+    </div>
+</section>
+
+<section class="why-section" aria-labelledby="why-heading">
+    <span class="section-tag">Why Us</span>
+    <h2 id="why-heading" class="section-title">Why Nepal chooses <span class="g">QuickBite</span></h2>
+    <div class="why-grid">
+        <div class="why-card">
+            <div class="why-icon">⚡</div>
+            <h3>Lightning Fast</h3>
+            <p>Average delivery under 30 minutes across Kathmandu, Pokhara, and beyond.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon">🍽️</div>
+            <h3>500+ Restaurants</h3>
+            <p>Street food, local cuisines, and fine dining — all in one place.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon">🔒</div>
+            <h3>Secure Payments</h3>
+            <p>eSewa, Khalti, card, or cash on delivery. Safe and contactless.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon">💛</div>
+            <h3>Best Deals</h3>
+            <p>Daily offers, first-order discounts, and cashback rewards every week.</p>
+        </div>
+    </div>
+</section>
+
+<section id="restaurants" class="rest-section" aria-labelledby="rest-heading">
+    <span class="section-tag">Restaurants</span>
+    <h2 id="rest-heading" class="section-title" style="margin-bottom:40px;">Explore top restaurants<br>across <span class="g">Nepal</span></h2>
+    <div class="rest-grid">
+        {% for restaurant in restaurants %}
+        <div class="rest-card">
+            <div class="rest-thumb">
+                <div class="rest-thumb-pattern"></div>
+                <span class="rest-thumb-label">{{ restaurant.name|slice:":2"|upper }}</span>
+            </div>
+            <div class="rest-body">
+                <div class="rest-name">{{ restaurant.name }}</div>
+                <p class="rest-loc">📍 {{ restaurant.location }}</p>
+                <a href="{% url 'order_page' %}" class="rest-btn">Order Now 🍜</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="rest-card">
+            <div class="rest-thumb"><div class="rest-thumb-pattern"></div><span class="rest-thumb-label">HK</span></div>
+            <div class="rest-body"><div class="rest-name">Himalayan Kitchen</div><p class="rest-loc">📍 Thamel, Kathmandu</p><a href="{% url 'order_page' %}" class="rest-btn">Order Now 🍜</a></div>
+        </div>
+        <div class="rest-card">
+            <div class="rest-thumb"><div class="rest-thumb-pattern"></div><span class="rest-thumb-label">MH</span></div>
+            <div class="rest-body"><div class="rest-name">Momo House Pokhara</div><p class="rest-loc">📍 Lakeside, Pokhara</p><a href="{% url 'order_page' %}" class="rest-btn">Order Now 🍜</a></div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="cta-section" aria-label="Call to action">
+    <div class="cta-left">
+        <h2>Hungry? Order now<br>in under 60 seconds.</h2>
+        <p>Join 50,000+ Nepalis who trust QuickBite for fast, reliable food delivery every day.</p>
+    </div>
+    <div class="cta-btns">
+        <a href="{% url 'order_page' %}" class="btn-black">Start Ordering 🍜</a>
+        <a href="{% url 'signup' %}" class="btn-wh">Create Free Account</a>
+    </div>
+</section>
+{% endblock %}
