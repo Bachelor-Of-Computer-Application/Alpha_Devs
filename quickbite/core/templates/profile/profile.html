@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-hero">
+    <span class="section-tag">Account</span>
+    <h1>Hi, {{ user.username }}</h1>
+    <p style="color:#666;margin-top:8px;">Manage your QuickBite experience.</p>
+</div>
+
+<section class="page-shell">
+    <div class="hero-cta-row" style="margin-bottom:32px;">
+        <a href="{% url 'order_page' %}" class="btn-gold">Browse menu</a>
+        <a href="{% url 'cart' %}" class="btn-outline">View cart</a>
+        <a href="{% url 'order_tracking' %}" class="btn-outline">Track order</a>
+    </div>
+    <div class="how-card" style="max-width:560px;">
+        <h3 class="rest-name" style="color:var(--black);font-family:'Playfair Display',serif;margin-bottom:8px;">Account details</h3>
+        <p class="food-meta">Email: {{ user.email|default:"—" }}</p>
+        <p class="food-meta">Username: {{ user.username }}</p>
+    </div>
+</section>
+{% endblock %}
