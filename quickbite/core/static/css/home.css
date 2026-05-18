@@ -1,0 +1,552 @@
+/* Home: hero, stats, how, why, restaurants grid, CTA */
+
+/* Hero */
+.hero {
+    min-height: 100vh;
+    padding-top: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: -140px;
+    right: -140px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #ffdf0022 0%, transparent 68%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, #d6efff44 0%, transparent 68%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-topline {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gold);
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding: 0 24px 60px;
+    animation: qb-rise 0.75s ease both;
+}
+
+.hero-logo {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 22px rgba(255, 223, 0, 0.28));
+    animation: qb-rise 0.65s ease both;
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    background: var(--sky);
+    color: var(--sky2);
+    font-size: 0.78rem;
+    font-weight: 700;
+    border-radius: 999px;
+    letter-spacing: 0.4px;
+    animation: qb-rise 0.7s 0.05s ease both;
+}
+
+.hero-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 900;
+    color: var(--black);
+    letter-spacing: -3px;
+    line-height: 1;
+    animation: qb-rise 0.72s 0.1s ease both;
+}
+
+.hero-title .r {
+    color: var(--red);
+}
+
+.hero-tagline {
+    font-size: clamp(1rem, 2.2vw, 1.22rem);
+    font-weight: 500;
+    color: #555;
+    max-width: 400px;
+    line-height: 1.65;
+    animation: qb-rise 0.72s 0.18s ease both;
+}
+
+.hero-cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: qb-rise 0.72s 0.26s ease both;
+}
+
+.btn-gold {
+    display: inline-block;
+    padding: 15px 46px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--black);
+    background: var(--gold);
+    border-radius: 9px;
+    text-decoration: none;
+    letter-spacing: 0.1px;
+    box-shadow: 0 4px 22px rgba(255, 223, 0, 0.38);
+    transition: all 0.2s;
+}
+
+.btn-gold:hover {
+    background: var(--gold2);
+    color: var(--black);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 223, 0, 0.5);
+}
+
+.btn-outline {
+    display: inline-block;
+    padding: 15px 32px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--black);
+    background: transparent;
+    border: 2px solid #ccc;
+    border-radius: 9px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover {
+    border-color: var(--black);
+    color: var(--black);
+}
+
+.hero-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: qb-rise 0.72s 0.34s ease both;
+}
+
+.chip {
+    padding: 6px 15px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.chip-red {
+    background: #ffe8ee;
+    color: var(--red);
+}
+
+.chip-sky {
+    background: var(--sky);
+    color: var(--sky2);
+}
+
+.chip-gold {
+    background: #fff8cc;
+    color: #9b7e00;
+}
+
+.scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #bbb;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    z-index: 2;
+    animation: qb-bounce 2s infinite;
+}
+
+.scroll-hint svg {
+    width: 18px;
+    opacity: 0.5;
+}
+
+/* Stats */
+.stats-bar {
+    background: var(--black);
+    color: var(--white);
+    padding: 42px 56px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    text-align: center;
+}
+
+.stat-item {
+    border-right: 1px solid #2a2a2a;
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.stat-num {
+    font-family: "Playfair Display", serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.82rem;
+    color: #aaa;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+/* How it works */
+.how-section {
+    background: var(--white);
+    padding: 90px 56px;
+}
+
+.how-section .section-title {
+    margin-bottom: 56px;
+}
+
+.how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+}
+
+.how-card {
+    padding: 36px 32px;
+    border: 1.5px solid #ebebeb;
+    border-radius: 16px;
+    position: relative;
+    transition: box-shadow 0.22s, transform 0.22s;
+}
+
+.how-card:hover {
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.09);
+    transform: translateY(-4px);
+}
+
+.how-num {
+    font-family: "Playfair Display", serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #f0f0f0;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+}
+
+.how-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.ic-sky {
+    background: var(--sky);
+}
+
+.ic-gold {
+    background: #fff8cc;
+}
+
+.ic-red {
+    background: #ffe8ee;
+}
+
+.how-card h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--black);
+}
+
+.how-card p {
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.7;
+}
+
+/* Why QuickBite */
+.why-section {
+    background: var(--black);
+    color: var(--white);
+    padding: 90px 56px;
+}
+
+.why-section .section-tag {
+    background: #1e1e1e;
+    color: var(--gold);
+}
+
+.why-section .section-title {
+    color: var(--white);
+    max-width: none;
+    margin-bottom: 56px;
+}
+
+.why-section .section-title .g {
+    background: var(--gold);
+    color: var(--black);
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.why-card {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 32px 24px;
+    border: 1px solid #252525;
+    transition: transform 0.22s, border-color 0.22s;
+}
+
+.why-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+}
+
+.why-icon {
+    font-size: 2.2rem;
+    margin-bottom: 16px;
+}
+
+.why-card h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.why-card p {
+    font-size: 0.84rem;
+    color: #999;
+    line-height: 1.65;
+}
+
+/* Restaurants (home section) */
+.rest-section {
+    background: var(--grey);
+    padding: 90px 56px;
+}
+
+.rest-section .section-tag {
+    background: var(--sky);
+    color: var(--sky2);
+}
+
+.rest-section .section-title {
+    margin-bottom: 40px;
+}
+
+.rest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 24px;
+    margin-top: 0;
+}
+
+.rest-card {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    transition: transform 0.22s, box-shadow 0.22s;
+}
+
+.rest-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.rest-thumb {
+    height: 140px;
+    width: 100%;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.rest-thumb-pattern {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        #1a1a1a 0px,
+        #1a1a1a 10px,
+        #222 10px,
+        #222 20px
+    );
+}
+
+.rest-thumb-label {
+    position: relative;
+    z-index: 1;
+    font-family: "Playfair Display", serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: -1px;
+}
+
+.rest-body {
+    padding: 18px 20px 20px;
+}
+
+.rest-name {
+    font-family: "Playfair Display", serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 5px;
+}
+
+.rest-loc {
+    font-size: 0.83rem;
+    color: #888;
+    margin-bottom: 14px;
+}
+
+.rest-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 700;
+    font-size: 0.88rem;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+
+.rest-btn:hover {
+    background: var(--gold2);
+    color: var(--black);
+}
+
+/* CTA banner */
+.cta-section {
+    background: var(--gold);
+    padding: 80px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.cta-left h2 {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 900;
+    color: var(--black);
+    line-height: 1.15;
+    margin-bottom: 12px;
+}
+
+.cta-left p {
+    font-size: 1rem;
+    color: #444;
+    max-width: 420px;
+    line-height: 1.6;
+}
+
+.cta-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-black {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--white);
+    background: var(--black);
+    border-radius: 9px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-black:hover {
+    background: #333;
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.btn-wh {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--black);
+    background: var(--white);
+    border-radius: 9px;
+    text-decoration: none;
+    border: 2px solid var(--black);
+    transition: all 0.2s;
+}
+
+.btn-wh:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
