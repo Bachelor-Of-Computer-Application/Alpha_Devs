@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ restaurant.name }}{% endblock %}
+{% block meta_description %}Order from {{ restaurant.name }} on QuickBite — {{ restaurant.location }}.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+<link rel="stylesheet" href="{% static 'css/restaurant.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/cart.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="rest-detail-hero">
+    <span class="section-tag">Restaurant</span>
+    <h1>{{ restaurant.name }}</h1>
+    <p class="rest-detail-meta">📍 {{ restaurant.location }} · 📞 {{ restaurant.phone }}</p>
+    <p style="margin-top:16px;">
+        <a href="{% url 'order_page' %}?restaurant={{ restaurant.pk }}" class="btn-gold" style="display:inline-block;">Order Now 🍜</a>
+        <a href="{% url 'restaurants' %}" class="btn-outline" style="display:inline-block;margin-left:10px;">All restaurants</a>
+    </p>
+</div>
+
+<div class="order-layout">
+    <div>
+        <h2 class="section-title" style="margin-bottom:20px;">Menu</h2>
+        <div class="food-grid">
+            {% for item in food_items %}
+            <article class="food-card">
+                <div class="food-card-img food-card-img--placeholder" aria-hidden="true">
+                    <span>{{ item.name|slice:":1"|upper }}</span>
+                </div>
+                <div class="food-card-body">
+                    <h3>{{ item.name }}</h3>
+                    <p class="food-price">Rs. {{ item.price }}</p>
+                    <button type="button" class="food-add" data-add-to-cart
+                            data-id="food-{{ item.pk }}"
+                            data-name="{{ item.name|escapejs }}"
+                            data-price="{{ item.price }}">Add to cart</button>
+                </div>
+            </article>
+            {% empty %}
+            <p style="color:#666;">No dishes listed for this restaurant yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <aside class="order-sidebar" aria-label="Shopping cart">
+        <h2>Your cart</h2>
+        <div id="cart-lines"></div>
+        <div class="cart-total">
+            <span>Total</span>
+            <span id="cart-total-amount">Rs. 0</span>
+        </div>
+        <div class="cart-actions">
+            <a href="{% url 'cart' %}" class="btn-checkout" style="display:block;text-decoration:none;">Review cart</a>
+        </div>
+    </aside>
+</div>
+{% endblock %}
