@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Restaurants{% endblock %}
+{% block meta_description %}Browse QuickBite partner restaurants across Nepal.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/restaurant.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="rest-list-hero">
+    <span class="section-tag">Restaurants</span>
+    <h1>Explore Quick<span class="r">Bite</span> partners</h1>
+    <p style="color:#666;max-width:480px;margin-top:12px;">Pick a restaurant, browse the menu, and order in minutes.</p>
+</div>
+
+<section class="rest-section" style="padding-top:0;">
+    <div class="rest-grid">
+        {% for restaurant in restaurants %}
+        <div class="rest-card">
+            <div class="rest-thumb">
+                <div class="rest-thumb-pattern"></div>
+                <span class="rest-thumb-label">{{ restaurant.name|slice:":2"|upper }}</span>
+            </div>
+            <div class="rest-body">
+                <div class="rest-name">{{ restaurant.name }}</div>
+                <p class="rest-loc">📍 {{ restaurant.location }}</p>
+                <a href="{% url 'order_page' %}?restaurant={{ restaurant.pk }}" class="rest-btn">Order Now 🍜</a>
+            </div>
+        </div>
+        {% empty %}
+        <p style="color:#666;">No restaurants in the database yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
