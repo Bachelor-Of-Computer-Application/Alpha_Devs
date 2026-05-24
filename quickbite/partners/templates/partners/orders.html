@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Orders - QuickBite Partner{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/partner_dashboard.css' %}">{% endblock %}
+{% block content %}
+<div class="qb-dash-wrap">
+    <h1>Orders — {{ restaurant.name }}</h1>
+    <div class="qb-dash-actions">
+        <a href="{% url 'partners:partner_dashboard' %}" class="qb-btn qb-btn-outline">← Dashboard</a>
+    </div>
+    <div class="qb-dash-card mt-3">
+        <table class="qb-table-simple">
+            <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for o in orders %}
+            <tr>
+                <td>{{ o.order_number }}</td>
+                <td>{{ o.user.username }}</td>
+                <td>{{ o.get_status_display }}</td>
+                <td>NPR {{ o.total_amount }}</td>
+                <td>
+                    <form method="post" action="{% url 'partners:partner_order_action' o.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        {% if o.status == 'pending' %}
+                        <button name="action" value="confirmed" class="qb-btn" style="padding:4px 10px;font-size:12px;">Accept</button>
+                        <button name="action" value="cancelled" class="qb-btn qb-btn-outline" style="padding:4px 10px;font-size:12px;">Reject</button>
+                        {% elif o.status == 'confirmed' %}
+                        <button name="action" value="preparing" class="qb-btn" style="padding:4px 10px;font-size:12px;">Preparing</button>
+                        {% elif o.status == 'preparing' %}
+                        <button name="action" value="ready" class="qb-btn" style="padding:4px 10px;font-size:12px;">Ready</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No orders yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
