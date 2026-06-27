@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Menu - QuickBite Partner{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/partner_dashboard.css' %}">{% endblock %}
+{% block content %}
+<div class="qb-dash-wrap">
+    <h1>Menu — {{ restaurant.name }}</h1>
+    <div class="qb-dash-actions">
+        <a href="{% url 'partners:partner_menu_add' %}" class="qb-btn">Add item</a>
+        <a href="{% url 'partners:partner_dashboard' %}" class="qb-btn qb-btn-outline">← Dashboard</a>
+    </div>
+    <div class="qb-dash-card mt-3">
+        <table class="qb-table-simple">
+            <thead><tr><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Available</th><th></th></tr></thead>
+            <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}{% if item.is_featured %} ★{% endif %}</td>
+                <td>NPR {{ item.price }}{% if item.discount_percent %} ({{ item.discount_percent }}% off){% endif %}</td>
+                <td>{{ item.get_category_display|default:"—" }}</td>
+                <td>{{ item.stock }}</td>
+                <td>{% if item.is_available %}Yes{% else %}No{% endif %}</td>
+                <td>
+                    <a href="{% url 'partners:partner_menu_edit' item.pk %}">Edit</a> |
+                    <a href="{% url 'partners:partner_menu_delete' item.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No menu items. <a href="{% url 'partners:partner_menu_add' %}">Add your first dish</a>.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
