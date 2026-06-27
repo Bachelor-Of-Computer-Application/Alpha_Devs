@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Partner Dashboard - QuickBite{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/partner_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="qb-dash-wrap">
+    <div class="qb-dash-header">
+        <h1>Partner Dashboard</h1>
+        <p class="text-muted mb-0">Welcome, {{ partner.restaurant_name }}</p>
+    </div>
+
+    {% if partner.status == 'pending' %}
+    <div class="qb-alert-pending">
+        <strong>Status:</strong> {{ partner.get_status_display }}
+        <p class="mb-0 mt-2">Your application is under review. Menu and orders unlock after approval.</p>
+    </div>
+    {% elif partner.status == 'approved' %}
+    <div class="qb-alert-ok">
+        <strong>Status:</strong> Approved — your restaurant is live on QuickBite.
+    </div>
+    {% endif %}
+
+    {% if restaurant %}
+    <div class="qb-dash-kpi">
+        <div class="qb-dash-card accent-blue">
+            <h3>Total orders</h3>
+            <div class="val">{{ stats.total_orders|default:0 }}</div>
+        </div>
+        <div class="qb-dash-card">
+            <h3>Pending</h3>
+            <div class="val">{{ stats.pending_orders|default:0 }}</div>
+        </div>
+        <div class="qb-dash-card">
+            <h3>Completed</h3>
+            <div class="val">{{ stats.completed_orders|default:0 }}</div>
+        </div>
+        <div class="qb-dash-card accent-gold">
+            <h3>Earnings</h3>
+            <div class="val">NPR {{ stats.earnings|default:0 }}</div>
+        </div>
+        <div class="qb-dash-card">
+            <h3>Rating</h3>
+            <div class="val">{{ stats.avg_rating|default:"0.0" }} ★</div>
+        </div>
+        <div class="qb-dash-card">
+            <h3>Menu items</h3>
+            <div class="val">{{ stats.menu_count|default:0 }}</div>
+        </div>
+    </div>
+
+    <div class="qb-dash-actions">
+        <a href="{% url 'partners:partner_menu' %}" class="qb-btn">Manage menu</a>
+        <a href="{% url 'partners:partner_orders' %}" class="qb-btn">View orders</a>
+        <a href="{% url 'partners:partner_profile' %}" class="qb-btn qb-btn-outline">Restaurant profile</a>
+        <a href="{% url 'partners:partner_analytics' %}" class="qb-btn qb-btn-gold">Analytics</a>
+    </div>
+
+    <div class="qb-dash-card">
+        <h3>Recent orders</h3>
+        {% if recent_orders %}
+        <table class="qb-table-simple">
+            <thead>
+                <tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+                {% for o in recent_orders %}
+                <tr>
+                    <td>{{ o.order_number }}</td>
+                    <td>{{ o.user.username }}</td>
+                    <td><span class="qb-status qb-status-{{ o.status }}">{{ o.get_status_display }}</span></td>
+                    <td>NPR {{ o.total_amount }}</td>
+                    <td>{{ o.created_at|date:"M d, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">No orders yet.</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <p class="mt-4">No restaurant linked yet. Contact admin after your partner application is approved.</p>
+    {% endif %}
+</div>
+{% endblock %}
