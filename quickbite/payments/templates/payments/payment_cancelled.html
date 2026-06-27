@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment cancelled — QuickBite{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payment-status-page">
+    <div class="success-panel success-panel--wide payment-status-card payment-status-card--warn">
+        <div class="status-icon status-icon--warn" aria-hidden="true">—</div>
+        <h1>Payment cancelled</h1>
+        <p class="payment-status-lead">You cancelled the payment. Your order has not been paid yet.</p>
+
+        {% if order %}
+        <div class="confirm-card">
+            <div class="confirm-row"><span>Order</span><strong>{{ order.order_number }}</strong></div>
+            <div class="confirm-row"><span>Amount</span><strong>NPR {{ order.total_amount|floatformat:0 }}</strong></div>
+        </div>
+        {% endif %}
+
+        <p class="payment-subtitle">You can complete payment anytime from your order or checkout again.</p>
+
+        <div class="success-actions">
+            {% if order %}
+            <a href="{% if order %}{% url 'order_payment' %}?order={{ order.pk }}{% else %}{% url 'order_payment' %}{% endif %}" class="btn-gold">Complete payment</a>
+            <a href="{% url 'order_detail' order.pk %}" class="btn-outline">View order</a>
+            {% else %}
+            <a href="{% url 'checkout' %}" class="btn-gold">Back to checkout</a>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn-outline">Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
