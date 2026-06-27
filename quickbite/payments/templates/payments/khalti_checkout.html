@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pay with Khalti{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/qb-ui.js' %}"></script>
+<script src="https://khalti.com/static/khalti-checkout.js"></script>
+<script>
+(function () {
+    var payBtn = document.getElementById("khalti-button");
+    var form = document.getElementById("khalti-form");
+    var tokenInput = document.getElementById("khalti-token");
+    var started = false;
+
+    var checkout = new KhaltiCheckout({
+        publicKey: "{{ khalti_public_key|default:'test_public_key_dc74e0fd57cb46cd93832a1e65f419' }}",
+        productIdentity: "{{ order.order_number }}",
+        productName: "QuickBite Order",
+        productUrl: window.location.origin,
+        eventHandler: {
+            onSuccess: function (payload) {
+                if (window.QuickBiteUI) {
+                    window.QuickBiteUI.showLoader("Verifying Khalti payment…");
+                }
+                tokenInput.value = payload.token;
+                form.submit();
+            },
+            onError: function () {
+                if (window.QuickBiteUI) {
+                    window.QuickBiteUI.hideLoader();
+                    window.QuickBiteUI.toast(
+                        "Khalti payment was cancelled or could not be completed.",
+                        "error"
+                    );
+                }
+                payBtn.disabled = false;
+                payBtn.textContent = "Try again with Khalti";
+                started = false;
+            },
+        },
+    });
+
+    function openKhalti() {
+        if (started) return;
+        started = true;
+        payBtn.disabled = true;
+        payBtn.textContent = "Opening Khalti…";
+        checkout.show({ amount: {{ amount_paisa }} });
+        setTimeout(function () {
+            if (started && payBtn.disabled) {
+                payBtn.disabled = false;
+                payBtn.textContent = "Pay with Khalti";
+                started = false;
+            }
+        }, 8000);
+    }
+
+    payBtn.addEventListener("click", openKhalti);
+
+    window.addEventListener("load", function () {
+        setTimeout(openKhalti, 600);
+    });
+})();
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="payment-gateway-page">
+    <div class="success-panel success-panel--wide payment-gateway-card">
+        <div class="pay-card-logo pay-card-logo--khalti pay-gateway-logo">
+            <img src="{% static 'images/payments/khalti.svg' %}" alt="Khalti" width="100" height="32">
+        </div>
+        <h1>Complete Khalti payment</h1>
+        <p>Order <strong>{{ order.order_number }}</strong></p>
+
+        <div class="confirm-card">
+            <div class="confirm-row"><span>Amount due</span><strong class="grand-total-amount">NPR {{ payment.amount|floatformat:0 }}</strong></div>
+            <div class="confirm-row"><span>Restaurant</span><strong>{{ order.restaurant.name }}</strong></div>
+        </div>
+
+        <p class="payment-subtitle">The Khalti window will open automatically. If it doesn't, tap the button below.</p>
+
+        <button type="button" id="khalti-button" class="btn-checkout btn-checkout--wide khalti-pay-btn">
+            Pay with Khalti
+        </button>
+
+        <form id="khalti-form" method="post" action="{% url 'payments:khalti_verify' payment.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="token" id="khalti-token">
+        </form>
+
+        <a href="{% url 'order_payment' %}?order={{ order.pk }}" class="back-link">← Choose another payment method</a>
+    </div>
+</div>
+{% endblock %}
