@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import User
 from orders.models import Order
 
 
@@ -24,8 +24,9 @@ class Payment(models.Model):
     """Payment records for orders and subscriptions"""
     STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('initiated', 'Initiated'),
         ('processing', 'Processing'),
-        ('completed', 'Completed'),
+        ('completed', 'Successful'),
         ('failed', 'Failed'),
         ('cancelled', 'Cancelled'),
         ('refunded', 'Refunded'),
