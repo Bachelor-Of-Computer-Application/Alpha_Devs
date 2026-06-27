@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Restaurant profile - QuickBite{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/partner_dashboard.css' %}">{% endblock %}
+{% block content %}
+<div class="qb-dash-wrap">
+    <h1>Restaurant profile</h1>
+    <div class="qb-dash-card mt-3" style="max-width:640px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="qb-btn">Save profile</button>
+            <a href="{% url 'partners:partner_dashboard' %}" class="qb-btn qb-btn-outline ms-2">Back</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
