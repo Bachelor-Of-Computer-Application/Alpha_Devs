@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment issue — QuickBite{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payment-status-page">
+    <div class="success-panel success-panel--wide payment-status-card payment-status-card--error">
+        <div class="status-icon status-icon--error" aria-hidden="true">✕</div>
+        <h1>Payment not completed</h1>
+        <p class="payment-status-lead">{{ error_message }}</p>
+
+        {% if messages %}
+        <div class="flash-messages flash-messages--inline">
+            {% for message in messages %}
+            <p class="flash flash--{{ message.tags|default:'error' }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if order %}
+        <div class="confirm-card">
+            <div class="confirm-row"><span>Order</span><strong>{{ order.order_number }}</strong></div>
+            <div class="confirm-row"><span>Amount</span><strong>NPR {{ order.total_amount|floatformat:0 }}</strong></div>
+        </div>
+        {% endif %}
+
+        <p class="payment-subtitle">No money was deducted unless you completed payment at your wallet. You can try again or choose another method.</p>
+
+        <div class="success-actions">
+            {% if order %}
+            <a href="{% if order %}{% url 'order_payment' %}?order={{ order.pk }}{% else %}{% url 'order_payment' %}{% endif %}" class="btn-gold">Try payment again</a>
+            <a href="{% url 'order_detail' order.pk %}" class="btn-outline">View order</a>
+            {% else %}
+            <a href="{% url 'order_payment' %}" class="btn-gold">Back to payment</a>
+            {% endif %}
+            <a href="{% url 'cart' %}" class="btn-outline">Return to cart</a>
+        </div>
+        <a href="{% url 'home' %}" class="back-link">Back to home</a>
+    </div>
+</div>
+{% endblock %}
