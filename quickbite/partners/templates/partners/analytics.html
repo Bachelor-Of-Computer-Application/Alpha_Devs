@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Analytics - QuickBite Partner{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/partner_dashboard.css' %}">{% endblock %}
+{% block content %}
+<div class="qb-dash-wrap">
+    <h1>Analytics — {{ restaurant.name }}</h1>
+    <div class="qb-dash-kpi">
+        <div class="qb-dash-card"><h3>Daily revenue</h3><div class="val">NPR {{ stats.daily_revenue }}</div></div>
+        <div class="qb-dash-card"><h3>Weekly revenue</h3><p class="val">NPR {{ stats.weekly_revenue }}</p></div>
+        <div class="qb-dash-card accent-gold"><h3>Monthly revenue</h3><div class="val">NPR {{ stats.monthly_revenue }}</div></div>
+        <div class="qb-dash-card"><h3>Cancellation rate</h3><div class="val">{{ stats.cancellation_rate }}%</div></div>
+    </div>
+    <div class="qb-dash-card mt-3">
+        <h3>Top selling foods</h3>
+        <ul class="mb-0">
+        {% for f in stats.top_foods %}
+            <li>{{ f.food_item__name }} — {{ f.qty }} sold</li>
+        {% empty %}
+            <li class="text-muted">No sales data yet.</li>
+        {% endfor %}
+        </ul>
+    </div>
+    <a href="{% url 'partners:partner_dashboard' %}" class="qb-btn qb-btn-outline mt-3">← Dashboard</a>
+</div>
+{% endblock %}
