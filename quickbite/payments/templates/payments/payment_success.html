@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment successful — QuickBite{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payment-status-page">
+    <div class="success-panel success-panel--wide payment-status-card payment-status-card--success">
+        <div class="status-icon status-icon--success" aria-hidden="true">✓</div>
+        <h1>Payment successful</h1>
+        <p class="payment-status-lead">Your payment has been received. Thank you!</p>
+
+        {% if order_id %}
+        <div class="confirm-card">
+            <div class="confirm-row"><span>Order</span><strong>{{ order_id }}</strong></div>
+            <div class="confirm-row"><span>Amount paid</span><strong>NPR {{ amount }}</strong></div>
+        </div>
+        {% endif %}
+
+        <p class="payment-subtitle">A confirmation email will arrive shortly.</p>
+
+        <div class="success-actions">
+            <a href="{% url 'order_history' %}" class="btn-gold">View my orders</a>
+            <a href="{% url 'order_page' %}" class="btn-outline">Order again</a>
+        </div>
+        <a href="{% url 'home' %}" class="back-link">Back to home</a>
+    </div>
+</div>
+{% endblock %}
