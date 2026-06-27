@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Delete item - QuickBite{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/partner_dashboard.css' %}">{% endblock %}
+{% block content %}
+<div class="qb-dash-wrap">
+    <h1>Delete {{ item.name }}?</h1>
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        <button type="submit" class="qb-btn" style="background:#EC2459;border-color:#EC2459;">Delete</button>
+        <a href="{% url 'partners:partner_menu' %}" class="qb-btn qb-btn-outline ms-2">Cancel</a>
+    </form>
+</div>
+{% endblock %}
