@@ -1,6 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import User
 from django.core.validators import FileExtensionValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class Rider(models.Model):
@@ -23,6 +24,8 @@ class Rider(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
+    citizenship_id = models.CharField(max_length=50, blank=True)
+    license_number = models.CharField(max_length=50, blank=True)
     emergency_contact = models.CharField(max_length=20)
     emergency_contact_name = models.CharField(max_length=100)
     
@@ -53,6 +56,13 @@ class Rider(models.Model):
     
     # Status and availability
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    rider_code = models.CharField(
+        max_length=6,
+        unique=True,
+        blank=True,
+        null=True,
+        help_text=_('6-character ID issued on admin approval'),
+    )
     is_available = models.BooleanField(default=True)
     current_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     current_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
@@ -87,6 +97,7 @@ class Delivery(models.Model):
     rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
     order = models.ForeignKey('orders.Order', on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    rejected = models.BooleanField(default=False)
     
     # Delivery details
     pickup_address = models.TextField()
@@ -110,6 +121,8 @@ class Delivery(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        verbose_name = "Delivery"
+        verbose_name_plural = "Deliveries"
         ordering = ['-created_at']
 
     def __str__(self):
@@ -127,7 +140,75 @@ class RiderEarnings(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        verbose_name = "Rider Earnings"
+        verbose_name_plural = "Rider Earnings"
         ordering = ['-period_start']
 
     def __str__(self):
         return f"{self.rider.full_name} - {self.period_start}"
+
+
+class RiderWallet(models.Model):
+    """Rider earnings wallet — tracks delivery fees and commissions."""
+
+    rider = models.OneToOneField(Rider, on_delete=models.CASCADE, related_name='wallet')
+    total_earnings = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    pending_earnings = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    withdrawable_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    delivery_count = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Wallet — {self.rider.full_name}"
+
+
+class RiderSubscription(models.Model):
+    """Active subscription for riders."""
+    
+    rider = models.OneToOneField(
+        Rider,
+        on_delete=models.CASCADE,
+        related_name='subscription'
+    )
+    
+    plan = models.ForeignKey(
+        'partners.SubscriptionPlan',
+        on_delete=models.PROTECT,
+        related_name='rider_subscriptions',
+        limit_choices_to={'plan_type': 'RIDER_MONTHLY'}
+    )
+    
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField()
+    
+    is_active = models.BooleanField(default=True)
+    auto_renew = models.BooleanField(default=False, help_text=_('Auto-renew subscription'))
+    
+    # Payment tracking
+    payment_status = models.CharField(max_length=20, default='pending')
+    transaction_id = models.CharField(max_length=100, blank=True)
+    
+    # Benefits
+    priority_delivery_allocation = models.BooleanField(default=True, help_text=_('Get priority for delivery assignments'))
+    earnings_multiplier = models.DecimalField(max_digits=3, decimal_places=2, default=1.0, help_text=_('Earnings multiplier (e.g., 1.1 for 10% bonus)'))
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = _('Rider Subscription')
+        verbose_name_plural = _('Rider Subscriptions')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.rider.full_name} - {self.plan.name}"
+    
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.end_date
+    
+    def days_remaining(self):
+        from django.utils import timezone
+        if self.is_expired():
+            return 0
+        return (self.end_date - timezone.now()).days
