@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Become a Rider - QuickBite{% endblock %}
+{% block meta_description %}Join QuickBite as a delivery rider. Earn money delivering food in your area. Flexible hours and great pay.{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">Become a Rider</h1>
+            <p class="text-center lead">Join QuickBite and start earning today</p>
+        </div>
+    </div>
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">
+        Your registration has been submitted successfully! Our team will review your application and contact you within 24-48 hours.
+    </div>
+    {% endif %}
+
+    <div class="row mt-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h4 class="mb-3">Personal Information</h4>
+                        
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required placeholder="MobileNumber">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="yourname@example.com">
+                            <div class="form-text">A welcome email will be sent here.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Create Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
+                            <div class="form-text">Minimum 8 characters. Used to log into the rider app.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emergency_contact" class="form-label">Emergency Contact Number *</label>
+                            <input type="tel" class="form-control" id="emergency_contact" name="emergency_contact" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emergency_contact_name" class="form-label">Emergency Contact Name *</label>
+                            <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" required>
+                        </div>
+                        
+                        <h4 class="mb-3 mt-4">Vehicle Information</h4>
+                        
+                        <div class="mb-3">
+                            <label for="vehicle_type" class="form-label">Vehicle Type *</label>
+                            <select class="form-select" id="vehicle_type" name="vehicle_type" required>
+                                <option value="">Select Vehicle Type</option>
+                                <option value="motorcycle">Motorcycle</option>
+                                <option value="scooter">Scooter</option>
+                                <option value="bicycle">Bicycle</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="vehicle_number" class="form-label">Vehicle Number *</label>
+                            <input type="text" class="form-control" id="vehicle_number" name="vehicle_number" required>
+                        </div>
+                        
+                        <h4 class="mb-3 mt-4">Address Information</h4>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Full Address *</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City *</label>
+                            <input type="text" class="form-control" id="city" name="city" required>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Registration Fee:</strong> NPR 1,000 (one-time)<br>
+                            This fee will be deducted from your first earnings.
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <strong>Required Documents:</strong><br>
+                            • Citizenship Document<br>
+                            • Driving License<br>
+                            • Profile Photo<br>
+                            <em>These will be requested after initial approval.</em>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
