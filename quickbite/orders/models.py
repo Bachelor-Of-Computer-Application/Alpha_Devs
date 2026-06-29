@@ -1,7 +1,7 @@
 import uuid
 
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import User
 from restaurant.models import FoodItem, Restaurant
 
 
@@ -49,19 +49,66 @@ class Order(models.Model):
     delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    service_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    coupon_code = models.CharField(max_length=50, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     
     # Delivery details
     delivery_address = models.TextField(default='')
     delivery_contact = models.CharField(max_length=20, default='')
     delivery_notes = models.TextField(blank=True)
+    delivery_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    delivery_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     estimated_delivery_minutes = models.PositiveIntegerField(null=True, blank=True)
+
+    # Fees & commissions
+    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    rider_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # Delivery confirmation
+    customer_confirmed_at = models.DateTimeField(null=True, blank=True)
+    rider_confirmed_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancellation_reason = models.CharField(max_length=255, blank=True)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     confirmed_at = models.DateTimeField(null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
+
+    def can_cancel(self):
+        return self.status in ('pending', 'confirmed', 'preparing', 'ready')
+
+    def cancel_warning(self):
+        if self.status in ('confirmed', 'preparing', 'ready'):
+            return 'Restaurant has already accepted this order. Cancellation may still be possible.'
+        return ''
+
+    def cancel_blocked_reason(self):
+        if self.status == 'cancelled':
+            return 'This order is already cancelled.'
+        if self.status in ('picked_up', 'in_transit', 'delivered'):
+            return 'Your order is already with the rider or delivered and cannot be cancelled online.'
+        if self.status == 'failed':
+            return 'This order has failed and cannot be cancelled.'
+        return 'This order can no longer be cancelled online. Contact support.'
+
+    def timeline_index(self):
+        if self.status == 'cancelled':
+            return -1
+        flow = ['pending', 'confirmed', 'preparing', 'ready', 'picked_up', 'in_transit', 'delivered']
+        return flow.index(self.status) if self.status in flow else 0
+
+    TIMELINE = [
+        ('pending', 'Order Placed'),
+        ('confirmed', 'Restaurant Accepted'),
+        ('preparing', 'Preparing'),
+        ('ready', 'Ready for Pickup'),
+        ('picked_up', 'Picked Up'),
+        ('in_transit', 'On The Way'),
+        ('delivered', 'Delivered'),
+    ]
 
     class Meta:
         ordering = ['-created_at']
