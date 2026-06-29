@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.html import format_html
 
 from .models import Order, OrderItem, OrderTracking, SupportTicket
@@ -42,7 +42,7 @@ class OrderAdmin(admin.ModelAdmin):
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
     list_per_page = 30
-    autocomplete_fields = ("user", "restaurant", "rider")
+    autocomplete_fields = ("restaurant", "rider")
     inlines = [OrderItemInline, OrderTrackingInline]
     actions = ["mark_delivered", "mark_cancelled"]
 
@@ -69,11 +69,53 @@ class OrderAdmin(admin.ModelAdmin):
 
     @admin.action(description="Mark as delivered")
     def mark_delivered(self, request, queryset):
-        queryset.update(status="delivered")
+        from restaurant.services.order_service import update_order_status
+
+        count = 0
+        for order in queryset:
+            try:
+                if order.status == "picked_up":
+                    update_order_status(order, "in_transit", request.user, "Admin: in transit")
+                    order.refresh_from_db()
+                if order.status == "in_transit":
+                    update_order_status(order, "delivered", request.user, "Admin: delivered")
+                    count += 1
+                    try:
+                        from analytics.services import track_admin_order_update
+                        track_admin_order_update(request.user, order.pk, "delivered")
+                    except Exception:
+                        pass
+                elif order.status not in ("delivered", "cancelled"):
+                    self.message_user(
+                        request,
+                        f"{order.order_number}: cannot deliver from status '{order.status}'.",
+                        messages.WARNING,
+                    )
+            except ValueError as exc:
+                self.message_user(request, f"{order.order_number}: {exc}", messages.ERROR)
+        if count:
+            self.message_user(request, f"Marked {count} order(s) as delivered.", messages.SUCCESS)
 
     @admin.action(description="Cancel orders")
     def mark_cancelled(self, request, queryset):
-        queryset.update(status="cancelled")
+        from restaurant.services.order_service import update_order_status
+
+        count = 0
+        for order in queryset:
+            if order.status == "cancelled":
+                continue
+            try:
+                update_order_status(order, "cancelled", request.user, "Cancelled by admin")
+                count += 1
+                try:
+                    from analytics.services import track_admin_order_update
+                    track_admin_order_update(request.user, order.pk, "cancelled")
+                except Exception:
+                    pass
+            except ValueError as exc:
+                self.message_user(request, f"{order.order_number}: {exc}", messages.ERROR)
+        if count:
+            self.message_user(request, f"Cancelled {count} order(s).", messages.SUCCESS)
 
 
 @admin.register(OrderItem)
@@ -101,4 +143,4 @@ class SupportTicketAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-    autocomplete_fields = ("user", "order")
+    autocomplete_fields = ("order",)
