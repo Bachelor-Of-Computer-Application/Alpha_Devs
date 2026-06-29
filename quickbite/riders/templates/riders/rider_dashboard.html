@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Rider Dashboard — QuickBite{% endblock %}
+{% block content %}
+<div class="container mt-5 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>Rider Dashboard</h1>
+      <p class="lead mb-0">{{ rider.full_name }} · ID: <strong>{{ rider.rider_code|default:"Pending" }}</strong></p>
+    </div>
+    <form method="post" action="{% url 'riders:toggle_availability' %}">{% csrf_token %}
+      <button class="btn btn-{% if rider.is_available %}success{% else %}secondary{% endif %}">
+        {% if rider.is_available %}Available{% else %}Unavailable{% endif %}
+      </button>
+    </form>
+  </div>
+
+  {% if rider.status == 'pending' %}
+  <div class="alert alert-warning">Application pending admin approval.</div>
+  {% elif rider.status == 'approved' or rider.status == 'active' %}
+  <div class="alert alert-success">You are active on the QuickBite fleet.</div>
+  {% endif %}
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Update location (for nearby order sorting)</h5>
+      <form method="post" action="{% url 'riders:update_location' %}" class="row g-2 align-items-end">{% csrf_token %}
+        <div class="col-auto"><input type="text" name="latitude" class="form-control" placeholder="Latitude" required></div>
+        <div class="col-auto"><input type="text" name="longitude" class="form-control" placeholder="Longitude" required></div>
+        <div class="col-auto"><button type="submit" class="btn btn-outline-primary btn-sm">Save location</button></div>
+      </form>
+      <p class="text-muted small mb-0 mt-2">Tip: use browser geolocation or your GPS app coordinates.</p>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card text-center p-3"><small>Deliveries</small><h3>{{ wallet.delivery_count }}</h3></div></div>
+    <div class="col-md-3"><div class="card text-center p-3"><small>Total Earnings</small><h3>NPR {{ wallet.total_earnings }}</h3></div></div>
+    <div class="col-md-3"><div class="card text-center p-3"><small>Pending</small><h3>NPR {{ wallet.pending_earnings }}</h3></div></div>
+    <div class="col-md-3"><div class="card text-center p-3"><small>Withdrawable</small><h3>NPR {{ wallet.withdrawable_balance }}</h3></div></div>
+  </div>
+
+  {% if available_orders %}
+  <div class="card mb-4">
+    <div class="card-header"><h5 class="mb-0">Nearby Orders (Ready)</h5></div>
+    <div class="card-body">
+      <table class="table table-sm">
+        <thead><tr><th>Order</th><th>Restaurant</th><th>Total</th><th></th></tr></thead>
+        <tbody>
+          {% for order in available_orders %}
+          <tr>
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.restaurant.name }}</td>
+            <td>NPR {{ order.total_amount }}</td>
+            <td>
+              <form method="post" action="{% url 'riders:accept_order' order.pk %}" class="d-inline">{% csrf_token %}
+                <button class="btn btn-sm btn-success">Accept</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-header"><h5 class="mb-0">My Deliveries</h5></div>
+    <div class="card-body">
+      {% if deliveries %}
+      <table class="table">
+        <thead><tr><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for d in deliveries %}
+          <tr>
+            <td>{{ d.order.order_number }}</td>
+            <td>{{ d.get_status_display }}</td>
+            <td>
+              {% if d.status == 'accepted' %}
+              <form method="post" action="{% url 'riders:delivery_action' d.pk %}" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="action" value="pickup">
+                <button class="btn btn-sm btn-primary">Picked Up</button>
+              </form>
+              {% elif d.status == 'picked_up' %}
+              <form method="post" action="{% url 'riders:delivery_action' d.pk %}" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="action" value="transit">
+                <button class="btn btn-sm btn-info">On the way</button>
+              </form>
+              <form method="post" action="{% url 'riders:delivery_action' d.pk %}" class="d-inline ms-1">{% csrf_token %}
+                <input type="hidden" name="action" value="deliver">
+                <button class="btn btn-sm btn-success">Delivered</button>
+              </form>
+              {% elif d.status == 'in_transit' %}
+              <form method="post" action="{% url 'riders:delivery_action' d.pk %}" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="action" value="deliver">
+                <button class="btn btn-sm btn-success">Delivered</button>
+              </form>
+              {% elif d.status == 'pending' %}
+              <form method="post" action="{% url 'riders:reject_delivery' d.pk %}" class="d-inline">{% csrf_token %}
+                <button class="btn btn-sm btn-outline-danger">Reject</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-muted mb-0">No deliveries yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
